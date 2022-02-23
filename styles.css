@@ -1,0 +1,18 @@
+.gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    grid-auto-flow: row;
+    width: 50vw;
+    height: 50vh;
+}
+
+.display {
+    width: 50vw;
+    margin: 10px 0px;
+    border: 2px solid black;
+}
+
+.gamesquare {
+    border: 2px solid purple;
+}
