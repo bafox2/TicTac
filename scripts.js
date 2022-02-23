@@ -75,6 +75,7 @@ const gameboard = (() => {
 
     function reset() {
         let _board = ["", "", "", "", "", "", "", "", ""];
+        gamelogic.resetGameState()
         for (i = 0; i <= 8; i++) {
             Array.from(squares)[i].innerHTML = _board[i]
         }
@@ -142,6 +143,9 @@ const gamelogic = (() => {
         return gameActive
     }
 
+    function resetGameState() {
+        return gameActive = true
+    }
     const handleResultValidation = () => {
         let roundWon = false;
         let _board = []
@@ -188,7 +192,8 @@ const gamelogic = (() => {
         flowMessage: flowMessage,
         handleResultValidation: handleResultValidation,
         getplayer: getplayer,
-        getGameState: getGameState
+        getGameState: getGameState,
+        resetGameState: resetGameState
     }
 
 })()
