@@ -1,3 +1,5 @@
+//could make a nice init function
+// could make the player button logic easier
 const Player = function(name, sign) {
     const getName = () => alert(name);
     const getSign = () => sign;
@@ -5,13 +7,8 @@ const Player = function(name, sign) {
 
 };
 
-let player1 = Player('jim', 'D');
-let player2 = Player('jeff', 'O');
-
-submit = document.querySelectorAll('.submit')
-submit.forEach((item) => {
-    item.addEventListener('click', updatePlayer)
-})
+let player1 = Player('Player1', 'X');
+let player2 = Player('player2', 'O');
 
 function updatePlayer(e) {
     //very ugly could maybe use document.querySelector('.name:nth-child(index)')
@@ -30,6 +27,11 @@ function updatePlayer(e) {
     }
 }
 
+submit = document.querySelectorAll('.submit')
+submit.forEach((item) => {
+    item.addEventListener('click', updatePlayer)
+})
+
 const gameboard = (() => {
 
     let _board = ["", "", "", "", "", "", "", "", ""];
@@ -40,7 +42,7 @@ const gameboard = (() => {
     })
 
     function clickevents(e) {
-        if (e.currentTarget.innerHTML == "") {
+        if (e.currentTarget.innerHTML == "" && gamelogic.getGameState() == true) {
             let index = findindex(e)
             makemark(index)
             renderboard()
@@ -64,22 +66,31 @@ const gameboard = (() => {
     }
 
     function renderboard() {
-        // obsolete right now because the makemark function does this on its own
+        //not doing anything?
+        for (i = 0; i <= 8; i++) {
+            _board[i] = Array.from(squares)[i].innerHTML
+        }
     }
 
-    function getboard() {
-        return _board
-    }
 
     function reset() {
         let _board = ["", "", "", "", "", "", "", "", ""];
+        for (i = 0; i <= 8; i++) {
+            Array.from(squares)[i].innerHTML = _board[i]
+        }
         display.innerHTML = "Please start!"
-
-        console.log(_board)
         squares.forEach((square) => {
             square.innerHTML = ""
         })
     }
+
+    function getboard() {
+        for (i = 0; i <= 8; i++) {
+            _board[i] = Array.from(squares)[i].innerHTML
+        }
+        return _board
+    }
+
     squares = document.querySelectorAll('.gamesquare')
     squares.forEach((square) => {
         square.addEventListener('click', clickevents)
@@ -94,6 +105,7 @@ const gamelogic = (() => {
 
     let playerturn = player1
     display = document.querySelector('.display')
+    let gameActive = true
 
     const handlePlayers = () => {
 
@@ -126,12 +138,15 @@ const gamelogic = (() => {
         display.innerHTML = `it is ${getplayer().name}'s turn`
     }
 
+    function getGameState() {
+        return gameActive
+    }
+
     const handleResultValidation = () => {
         let roundWon = false;
         let _board = []
         _board = gameboard.getboard()
 
-        console.log(_board)
         for (let i = 0; i <= 7; i++) {
             const winCondition = winningConditions[i];
             let a = _board[winCondition[0]];
@@ -157,7 +172,8 @@ const gamelogic = (() => {
 
         if (roundWon) {
             winningMessage()
-            return
+            gameActive = false
+                // need a way to stop more clicks on board
         }
 
         let roundDraw = !(_board.includes(""))
@@ -167,6 +183,12 @@ const gamelogic = (() => {
             return
         }
     }
-    return { handlePlayers: handlePlayers, flowMessage: flowMessage, handleResultValidation: handleResultValidation, getplayer: getplayer }
+    return {
+        handlePlayers: handlePlayers,
+        flowMessage: flowMessage,
+        handleResultValidation: handleResultValidation,
+        getplayer: getplayer,
+        getGameState: getGameState
+    }
 
 })()

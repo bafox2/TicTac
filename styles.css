@@ -1,10 +1,11 @@
 .gameboard {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
+    grid-template-rows: repeat(3, minmax(50px, 1fr));
     grid-auto-flow: row;
     width: 50vw;
-    height: 50vh;
+    height: 60vh;
+    margin: 0;
 }
 
 .display {
@@ -14,5 +15,9 @@
 }
 
 .gamesquare {
+    font-size: 2rem;
+    display: flex;
     border: 2px solid purple;
+    justify-content: center;
+    align-items: center;
 }
