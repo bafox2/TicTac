@@ -18,11 +18,15 @@ function updatePlayer(e) {
     let index = Array.from(submit).indexOf(e.target)
     if (index == 0) {
         player1.name = document.querySelector(".name").value
+        document.querySelector(".name").value = ""
         player1.sign = document.querySelector(".symbol").value
+        document.querySelector(".symbol").value = ""
     } else if (index == 1) {
 
         player2.name = document.querySelectorAll(".name")[1].value
+        document.querySelectorAll(".name")[1].value = ""
         player2.sign = document.querySelectorAll(".symbol")[1].value
+        document.querySelectorAll(".symbol")[1].value = ""
     }
 }
 
@@ -36,18 +40,22 @@ const gameboard = (() => {
     })
 
     function clickevents(e) {
-        let index = findindex(e)
-        makemark(index)
-        renderboard()
-        handlePlayers()
-
+        if (e.currentTarget.innerHTML == "") {
+            let index = findindex(e)
+            makemark(index)
+            renderboard()
+            gamelogic.handlePlayers()
+            gamelogic.flowMessage()
+            gamelogic.handleResultValidation()
+        }
     }
 
     function makemark(index) {
         //could try to use the code from reset to make it more elegant
-        _board[index] = player1.sign
+        // need to add a check to see if the thing is empty  
+        _board[index] = (gamelogic.getplayer()).sign
         let change = document.querySelector('.gameboard').childNodes[index]
-        change.innerHTML = player1.sign
+        change.innerHTML = gamelogic.getplayer().sign
     }
 
     function findindex(e) {
@@ -59,8 +67,15 @@ const gameboard = (() => {
         // obsolete right now because the makemark function does this on its own
     }
 
+    function getboard() {
+        return _board
+    }
+
     function reset() {
         let _board = ["", "", "", "", "", "", "", "", ""];
+        display.innerHTML = "Please start!"
+
+        console.log(_board)
         squares.forEach((square) => {
             square.innerHTML = ""
         })
@@ -71,23 +86,31 @@ const gameboard = (() => {
     })
     resetbtn = document.querySelector('.reset')
     resetbtn.addEventListener('click', reset)
-
+    return { getboard: getboard }
 })()
 
 
 const gamelogic = (() => {
 
+    let playerturn = player1
     display = document.querySelector('.display')
 
     const handlePlayers = () => {
-        let playerturn = player1
-        if (playerturn == player1) { playerturn == player2 } else if (playerturn == player2) {
-            playerturn = player1
-        }
-        flowMessage()
-        console.log(playerturn)
-    }
 
+        if (playerturn == player1) {
+            playerturn = player2;
+
+            flowMessage(playerturn.name)
+            return player1.name
+        } else {
+            playerturn = player1;
+            flowMessage(playerturn.name)
+            return player2.name
+        }
+    }
+    const getplayer = () => {
+        return playerturn
+    }
     const winningConditions = [
         [0, 1, 2],
         [3, 4, 5],
@@ -100,11 +123,15 @@ const gamelogic = (() => {
     ];
 
     function flowMessage() {
-        display.innerHTML = `it is ${playerturn}'s turn`
+        display.innerHTML = `it is ${getplayer().name}'s turn`
     }
 
     const handleResultValidation = () => {
         let roundWon = false;
+        let _board = []
+        _board = gameboard.getboard()
+
+        console.log(_board)
         for (let i = 0; i <= 7; i++) {
             const winCondition = winningConditions[i];
             let a = _board[winCondition[0]];
@@ -120,7 +147,8 @@ const gamelogic = (() => {
         }
 
         function winningMessage() {
-            display.innerHTML = `${playerturn} won`
+
+            display.innerHTML = `${getplayer().name} won`
         }
 
         function drawMessage() {
@@ -128,16 +156,17 @@ const gamelogic = (() => {
         }
 
         if (roundWon) {
-            gameDisplay.innerHTML = winningMessage()
+            winningMessage()
             return
         }
 
-        let roundDraw = !_board.includes("")
+        let roundDraw = !(_board.includes(""))
         if (roundDraw) {
-            gameDisplay.innerHTML = drawMessage()
+            console.log('draw coditon')
+            drawMessage()
             return
         }
     }
-    return { handlePlayers: handlePlayers }
+    return { handlePlayers: handlePlayers, flowMessage: flowMessage, handleResultValidation: handleResultValidation, getplayer: getplayer }
 
 })()
